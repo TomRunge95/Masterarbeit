@@ -1,5 +1,5 @@
-source("reg_model_links.R")
-source("reg_model_rechts.R")
+source("../Datenbearbeitung/reg_model_links.R")
+source("../Datenbearbeitung/reg_model_rechts.R")
 library(stargazer)
 
 
@@ -31,17 +31,17 @@ summary(model_gewalt_links_extended)
 
 export_transformed_models_with_pseudoR2(
   models = list(model_gewalt_links_extended, model_straf_links_extended),
-  filename = "model_gewaltstraf_links_extended_with_pseudoR2.tex"
+  filename = "../Visualisierung/model_gewaltstraf_links_extended_with_pseudoR2.tex"
 )
 
 export_transformed_models_with_pseudoR2(
   models = list(model_tokengewalt_links_extended, model_tokenstraf_links_extended),
-  filename = "model_tokengewaltstraf_links_extended_with_pseudoR2.tex"
+  filename = "../Visualisierung/model_tokengewaltstraf_links_extended_with_pseudoR2.tex"
 )
 
 export_transformed_models_with_pseudoR2(
   models = list(model_orga_links_extended, model_straf_orga_links_extended),
-  filename = "model_straf_orga_links_basic_links_extended_with_pseudoR2.tex"
+  filename = "../Visualisierung/model_straf_orga_links_basic_links_extended_with_pseudoR2.tex"
 )
 
 
@@ -50,19 +50,18 @@ export_transformed_models_with_pseudoR2(
 
 a <- export_transformed_models_with_pseudoR2(
   models = list(model_gewalt_rechts_extended, model_straf_rechts_extended),
-  filename = "model_gewaltstraf_rechts_extended.tex"
+  filename = "../Visualisierung/model_gewaltstraf_rechts_extended.tex"
 )
 
 export_transformed_models_with_pseudoR2(
   models = list(model_tokengewalt_rechts_extended, model_tokenstraf_rechts_extended),
-  filename = "model_tokengewaltstraf_rechts_extended.tex"
+  filename = "../Visualisierung/model_tokengewaltstraf_rechts_extended.tex"
 )
 
 export_transformed_models_with_pseudoR2(
   models = list(model_orga_rechts_extended, model_straf_orga_rechts_extended),
-  filename = "model_orga_rechts_extended_extended.tex"
+  filename = "../Visualisierung/model_orga_rechts_extended_extended.tex"
 )
 
 
-stargazer::stargazer()
 
