@@ -35,6 +35,8 @@ dfm_grouped <- dfm_group(dfm,
 aaa <- textstat_frequency(dfm_grouped, 
                           groups = paste(docvars(dfm_grouped, "group")))
 
+a <- textstat_frequency(dfm, groups = docvars(dfm, "group"))
+
 a_wide <- a %>% 
   select(feature, group, frequency) %>% 
   pivot_wider(names_from = group, values_from = frequency, values_fill = 0)
@@ -57,7 +59,6 @@ rechts <- aaa %>%
 dfm_grouped <- dfm_group(dfm, groups = docvars(dfm, "group"))
 
 
-a <- textstat_frequency(dfm, groups = docvars(dfm, "group"))
 
 
 

@@ -11,7 +11,7 @@ library(dplyr)
 library(stringr)
 library(patchwork)
 
-source("../Datenbearbeitung/TokenAnzahl.R")
+source("../Analysen/TokenAnzahl.R")
 
 
 source("../Visualisierung/GG_Layout.R")

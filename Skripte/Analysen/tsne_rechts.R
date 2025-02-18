@@ -15,7 +15,8 @@ source("../Analysen/funktionen_glove.R")
 source("../Analysen/Kookkurrenzen.R")
 source("../Visualisierung/GG_Layout.R")
 
-modell_links <- readRDS("../../Daten/modell_links.RDS")
+
+modell_rechts <- readRDS("../../Daten/modell_rechts.RDS")
 
 
 
@@ -49,9 +50,6 @@ find_similar_words <- function(wort_filter, modell, exclusion_list, threshold) {
            !rowname %in% exclusion_list)
   return(final_df)
 }
-
-
-
 
 tsne_and_plot <- function(word_vectors, title, perplexity, k_centers, max_iter = 5000, category_name, similar_words_df) {
   # Hilfsfunktion, um t-SNE mit Fallback zu berechnen
@@ -91,16 +89,19 @@ tsne_and_plot <- function(word_vectors, title, perplexity, k_centers, max_iter =
   tsne_data <- tsne_data %>%
     mutate(cluster = as.factor(clusters))
   
+  
+  
   tsne_data_filtered <- tsne_data %>%
     group_by(cluster) %>%
-    slice_max(order_by = b, n = 50) 
+    slice_max(order_by = b, n = 250) %>%  
+    filter(b > quantile(b, 0.25)) 
 
-  
   
   # t-SNE-Plot erstellen
   tsne_plot <- tsne_data %>%
     ggplot(aes(x = V1, y = V2, label = word, color = cluster)) + 
-    geom_text(data = tsne_data_filtered, aes(alpha = b), size = 3) + 
+    geom_point(alpha = 0.05) +
+    geom_text(data = tsne_data_filtered, aes(alpha = b), size = 2) + 
     scale_alpha_continuous(range = c(0.33, 1)) + # Transparenzbereich
     scale_color_brewer(palette = "Dark2") +  # Farbpalette "Spectral"
     labs(title = title, color = "Cluster", alpha = "Relevance") +
@@ -118,7 +119,7 @@ tsne_and_plot <- function(word_vectors, title, perplexity, k_centers, max_iter =
   
   # Plot speichern
   ggsave_pref(
-    filename = paste0("../Visualisierung/",category_name, "_links", ".png"), 
+    filename = paste0("../Visualisierung/",category_name, "_rechts", ".png"), 
     plot = tsne_plot, 
     bg = "white",
     height = 14
@@ -128,19 +129,19 @@ tsne_and_plot <- function(word_vectors, title, perplexity, k_centers, max_iter =
 }
 
 categories <- list(
-  gewalt = list(pattern = worte_links$gewalt, threshold = 0.3, k = 3),
-  gewalt2 = list(pattern = worte_links$gewalt2, threshold = 0.3, k = 3),
-  orga = list(pattern = worte_links$orga, threshold = 0.3, k = 3),
-  aktionen = list(pattern = worte_links$aktionen, threshold = 0.3, k = 3),
-  extrem = list(pattern = worte_links$extrem, threshold = 0.3, k = 3),
-  ziel = list(pattern = worte_links$ziel, threshold = 0.3, k = 3)
+  gewalt = list(pattern = worte_rechts$gewalt, threshold = 0.3, k = 3),
+  gewalt2 = list(pattern = worte_rechts$gewalt2, threshold = 0.3, k = 3),
+  orga = list(pattern = worte_rechts$orga, threshold = 0.3, k = 4),
+  aktionen = list(pattern = worte_rechts$aktionen, threshold = 0.3, k = 3),
+  extrem = list(pattern = worte_rechts$extrem, threshold = 0.3, k = 3),
+  ziel = list(pattern = worte_rechts$ziel, threshold = 0.3, k = 3)
 )
-results_tsne_links <- list()
+results_tsne_rechts <- list()
 
 for (category_name in names(categories)) {
   # Schritt 1: Häufige Wörter filtern
   filtered_words <- filter_frequent_words(
-    tokens = token_list_links$ALL,
+    tokens = token_list_rechts$ALL,
     pattern = categories[[category_name]]$pattern,
     freq_threshold = 100
   )
@@ -148,12 +149,12 @@ for (category_name in names(categories)) {
   # Schritt 2: Ähnliche Wörter finden
   similar_words_df <- find_similar_words(
     wort_filter = filtered_words,
-    modell = modell_links,
+    modell = modell_rechts,
     exclusion_list = categories[[category_name]]$pattern,
     threshold = categories[[category_name]]$threshold)
   
   # Schritt 3: Wortvektoren abrufen
-  word_vectors <- modell_links[similar_words_df$rowname, , drop = FALSE]
+  word_vectors <- modell_rechts[similar_words_df$rowname, , drop = FALSE]
   
   tsne_result <- tsne_and_plot(
     word_vectors = word_vectors,
@@ -166,10 +167,10 @@ for (category_name in names(categories)) {
   
   
   # Ergebnisse speichern
-  results_tsne_links[[category_name]] <- tsne_result
+  results_tsne_rechts[[category_name]] <- tsne_result
 }
 
 # Alle Plots anzeigen
-for (category_name in names(results_tsne_links)) {
-  print(results_tsne_links[[category_name]]$plot)
+for (category_name in names(results_tsne_rechts)) {
+  print(results_tsne_rechts[[category_name]]$plot)
 }
